@@ -1,0 +1,20 @@
+{
+    "name": "ritey/nusoap",
+    "description": "Clone of NuSoap to work with Packagist/Composer",
+    "keywords": ["php", "nusoap", "SOAP"],
+    "homepage": "http://github.com/ritey/nusoap",
+    "license": "LGPLv2",
+    "authors": [
+        {
+            "name": "Dietrich Ayala",
+            "homepage": "http://sourceforge.net/u/dietricha/profile/"
+        },
+        {
+            "name": "Scott Nichol",
+            "homepage": "http://sourceforge.net/u/snichol/profile/"
+        }
+    ],
+    "autoload": {
+    	"classmap": ["lib/"]
+    }
+}

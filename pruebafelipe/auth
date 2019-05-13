@@ -1,0 +1,21 @@
+
+                                  
+  [InvalidArgumentException]      
+  Command "make" is not defined.  
+  Did you mean one of these?      
+      make:controller             
+      make:middleware             
+      make:migration              
+      make:provider               
+      make:listener               
+      make:request                
+      make:console                
+      make:command                
+      make:seeder                 
+      make:policy                 
+      make:event                  
+      make:model                  
+      make:test                   
+      make:job                    
+                                  
+
