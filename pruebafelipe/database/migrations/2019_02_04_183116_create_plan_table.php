@@ -19,7 +19,6 @@ class CreatePlanTable extends Migration
             $table->string('experiences',1600)->nullable();
             $table->boolean('validated')->default(false);
             $table->integer('status')->default(0);
-            $table->integer('num_correction')->default(0);
             $table->string('experiences_corrections',2500)->nullable();
             $table->integer('team')->unsigned()->nullable();
             $table->foreign('team')->references('id_team')->on('teams');

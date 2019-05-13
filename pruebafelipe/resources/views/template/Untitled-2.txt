@@ -1,0 +1,113 @@
+                                            ->join('headquarters','students.headquarter','=','headquarters.id_headquarters')
+                                            ->join('teams','headquarters.team', '=', 'teams.id_team')
+                                            ->join('supervisors','teams.supervisor', '=', 'supervisors.id_supervisors')
+                                            ->where('supervisors.id_supervisors',$supervisors)
+
+->join('municipality','teams.municipality', '=', 'municipality.id_municipality')
+->join('departament','municipality.id_departament', '=', 'departament.id_departament')
+->orderBy('departament.id_departament','desc')
+                                ->groupBy('departament.id_departament')
+
+whereIn(DB::raw('month(students.created_at)'),$sq_Data)
+                                ->where('supervisors.id_supervisors',$supervisors)
+                                ->where(DB::raw('year(students.created_at)'),$yearsData)
+where(DB::raw('month(students.created_at)'),$dataYear)
+                                ->where('departament.id_departament', $departament)
+
+                                ->where('cohortes.name','like','%'.$gcohorts.'%')
+                                join('cohortes','students.cohorte','=','cohortes.id')
+                                ->where('municipality.id_municipality', $departament)
+
+->join('headquarters','students.headquarter','=','headquarters.id_headquarters')
+->join('teams','headquarters.team', '=', 'teams.id_team')
+->join('supervisors','teams.supervisor', '=', 'supervisors.id_supervisors')
+->join('municipality','teams.municipality', '=', 'municipality.id_municipality')
+->join('departament','municipality.id_departament', '=', 'departament.id_departament')
+
+$name_supervisor = $this->getNameSupervisor($supervisors);
+$name_departament = $this->getNameDepartament($departament);
+$name_municipality = $this->getNameMunicipality($departament);
+
+Municipio: '.$name_municipality->municipality
+supervisor: '.$name_supervisor->name.', departamento: '.$name_departament->departament.'
+
+SELECT cohortes.name, COUNT(cohortes.name) from students JOIN cohortes on students.cohorte = cohortes.id GROUP BY (cohortes.name) ORDER BY (cohortes.id) DESC
+
+
+      @if(Auth::user()!=null)
+        @if(Auth::user()->rol == "Coordinador" || Auth::user()->rol == "Supervisor" || Auth::user()->rol == "Admin" || Auth::user()->rol == "Gestor")
+          
+        @endif
+      @endif
+
+      "count(case when students.financing = 1 then 1 end)
+
+
+      SELECT COUNT(*) FROM students
+JOIN cohortes ON students.cohorte = cohortes.id 
+JOIN headquarters ON students.headquarter = headquarters.id_headquarters
+JOIN teams ON headquarters.team = teams.id_team
+WHERE teams.name LIKE '%AMPI%'
+AND cohortes.name LIKE '%2 COHORTE 2018'
+
+
+Query for B/S 
+
+
+TODOS
+SELECT results.description as rls, SUM(objectives_results.amount) as amount 
+FROM objectives_results JOIN results ON objectives_results.result = results.id 
+GROUP BY (results.description)
+
+Selecciono X
+SELECT results.description as rls, SUM(objectives_results.amount) as amount 
+FROM objectives_results JOIN results ON objectives_results.result = results.id 
+WHERE results.id = XX 
+GROUP BY (results.description)
+
+SELECT DISTINCT objectives_results.id, results.description as 'bien y servicio', 
+objectives_results.amount as amount, objectives.objective, 
+interv_lines.name as 'linea de intervencion', interv_lines.area as 'area', 
+interv_lines.policy as 'politica publica' 
+FROM objectives_results 
+JOIN results ON objectives_results.result = results.id 
+JOIN objectives ON objectives_results.objective = objectives.id 
+JOIN students ON objectives.student = students.id_student 
+JOIN projects ON students.id_student = projects.student 
+JOIN interv_lines ON projects.line = interv_lines.id 
+WHERE results.id = 21 and amount <> 0
+
+SELECT DISTINCT results.description as 'bien y servicio', 
+objectives_results.description, objectives_results.amount as amount, 
+objectives.objective, interv_lines.name as 'linea de intervencion', 
+interv_lines.area as 'area', interv_lines.policy as 'politica publica'
+FROM objectives_results 
+JOIN results ON objectives_results.result = results.id 
+JOIN objectives ON objectives_results.objective = objectives.id 
+JOIN students ON objectives.student = students.id_student 
+JOIN projects ON students.id_student = projects.student 
+JOIN headquarters ON students.headquarter = headquarters.id_headquarters
+JOIN teams ON headquarters.team = teams.id_team
+JOIN municipality ON teams.municipality = municipality.id_municipality
+JOIN departament ON municipality.id_departament = departament.id_departament
+JOIN cohortes ON students.cohorte = cohortes.id
+JOIN interv_lines ON projects.line = interv_lines.id 
+WHERE results.id = 10 and amount <> 0 ORDER BY amount
+
+
+SELECT DISTINCT results.description as 'bien y servicio', 
+objectives_results.description, objectives_results.amount as amount, 
+objectives.objective, interv_lines.name as 'linea de intervencion', 
+interv_lines.area as 'area', interv_lines.policy as 'politica publica' 
+FROM objectives_results 
+JOIN results ON objectives_results.result = results.id 
+JOIN objectives ON objectives_results.objective = objectives.id 
+JOIN students ON objectives.student = students.id_student 
+JOIN projects ON students.id_student = projects.student 
+JOIN headquarters ON students.headquarter = headquarters.id_headquarters 
+JOIN teams ON headquarters.team = teams.id_team 
+JOIN municipality ON teams.municipality = municipality.id_municipality 
+JOIN departament ON municipality.id_departament = departament.id_departament 
+JOIN cohortes ON students.cohorte = cohortes.id 
+JOIN interv_lines ON projects.line = interv_lines.id 
+WHERE results.id = 20 and amount <> 0 ORDER BY amount

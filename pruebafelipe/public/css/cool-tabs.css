@@ -33,7 +33,7 @@ header {
 }
 
 #material-tabs>a {
-    width: 24%;
+    width: 33%;
 		position: relative;
 	 display:inline-block;
 		text-decoration: none;
@@ -76,20 +76,15 @@ header {
 
 #tab1-tab.active ~ span.yellow-bar {
 		left: 0;
-		width: 25%;
+		width: 33%;
 }
 
 #tab2-tab.active ~ span.yellow-bar {
-		left: 25%;
-		width: 25%;
-}
-
-#tab0-tab.active ~ span.yellow-bar {
-		left:50%;
-		width: 25%;
+		left:33%;
+		width: 34%;
 }
 
 #tab3-tab.active ~ span.yellow-bar {
-		left: 75%;
-		width: 25%;
+		left: 66%;
+		width: 33%;
 }

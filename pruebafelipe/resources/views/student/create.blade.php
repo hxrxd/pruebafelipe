@@ -271,9 +271,9 @@
                                     </div>
                                 </div>
                                 <div class="form-group"><label class="col-sm-2 control-label">Sede</label>
-                                    <div class="col-sm-10">
-                                        {!!Form::select('headquarter',$headquarters,null,['id'=>'headquarter','class'=>'form-control m-b chosen-select','tablaindex'=>'2'])!!}
-                                    </div>
+                                        <div class="col-sm-10">
+                                            {!!Form::select('headquarter',$headquarters,null,['id'=>'headquarter','class'=>'form-control m-b','required'=>''])!!}
+                                        </div>
                                 </div>
 
                                  <div class="form-group"><label class="col-sm-2 control-label">Fecha de Inicio</label>
@@ -322,9 +322,30 @@
 <script src="js/plugins/chosen/chosen.jquery.js"></script>
 <script src="js/plugins/validate/jquery.validate.min.js"></script>
 
-
+<script>
+    function getHead(){
+        var idcarrer = jQuery('#carrer').val();
+        var idua = jQuery('#academicu').val();
+        console.log(idcarrer+'---'+idua);
+        $.get('{{url('information/request/ajax-state?value=')}}' + idcarrer+'-'+idua, function(data) {
+            console.log(data);
+            $('#headquarter').empty();
+            $.each(data, function(index,subCatObj){
+                $('#headquarter').append(''+subCatObj.sd+'');
+                $("#headquarter").append('<option value="'+subCatObj.id+'-'+subCatObj.it+'"> '+subCatObj.sd+' </option>');
+            });
+        });
+    }
+    
+    $(document).ready(function(){
+        getHead();
+        jQuery('#carrer').change(getHead);
+       
+    });
+</script>
 
 <script>
+    
        $('#departamenta').on('change', function(e){
         console.log(e.target.value);
         var id_departament = e.target.value;
@@ -338,9 +359,7 @@
             });
         });
     });
-
-  
-
+    
 </script>
 
 <script>

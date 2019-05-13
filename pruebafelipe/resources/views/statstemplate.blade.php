@@ -16,8 +16,10 @@
     {!!Html::style('css/style.css')!!}
     {!!Html::style('css/checkbox.css')!!}
 
-
-
+    {!! Html::style('css/plugins/sweetalert/sweetalert.css')!!}
+    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    {!! HTML::script('js/plugins/sweetalert/sweetalert.min.js') !!}
+    
     {!!Html::style('css/plugins/chosen/bootstrap-chosen.css') !!}
 
     {!!Html::style('css/plugins/switchery/switchery.css') !!}
@@ -56,6 +58,111 @@
       font-size: 16px;
       height: 40px;
     }
+
+    .control-menu {
+      background-color: transparent;
+      background-position: center center;
+      
+      display: block;
+      float: right;
+      height: 40px;
+      margin-right: 1.3em;
+      width: 40px;
+    }
+    .control-menu a span {
+        display: inline-block;
+        height: 40px;
+        text-indent: -9999px;
+        width: 40px;
+    }
+    .control-menu .close {
+        background-position: center center;
+        background-repeat: no-repeat;
+        display: none;
+    }
+    .control-menu .open {
+        background-position: center center;
+        background-repeat: no-repeat;
+        display: block;
+    }
+
+    ul.nav-items {
+        clear: both;
+        height: 0;
+        overflow: hidden;
+        transition: height 0.4s ease-in-out 0s, background-color 2s ease 0s; /*El menú cambia su altura y su color de fondo mediante una transición suavizada al voover a su estado unicial*/
+    }
+
+    #navigation:target ul.nav-items {
+        background: #f0f0f0 none repeat scroll 0 0;
+        height: 26.4em;
+        transition: height 0.4s ease-in-out 0s, background-color 0.9s ease 0s; /*El menú cambia su altura y su color de fondo mediante una transición suavizada al abrirse*/
+    }
+
+
+    /*Al hacer clic sobre el enlace que abre el menú éste desaparece*/
+    .close { 
+      display:none;
+    }
+            
+    #navigation:target .open {
+          display: none;
+    }
+
+    /* Al hacer clic sobre el enlace que abre el menú aparece el enlace .close que previamente estaba oculto*/
+
+    #navigation:target .close {
+            display: block;
+    }
+    /*Estilos menu*/
+
+    ul.nav-items li {
+        display: block;
+    }
+    ul.nav-items a {
+        border-top: 2px dotted #dddbdb;
+        color: #333;
+        display: block;
+        height: 3em;
+        line-height: 3em;
+        margin: 0 1.3em;
+    }
+    ul.nav-items li:first-child a {
+        border-top: 2px solid transparent;
+    }
+    ul.nav-items li a span {
+        border-left: 3px solid;
+        height: 3.2em;
+        padding: 0.4em 0.5em;
+    }
+    #Student a span {
+        border-color: #02556e;
+    }
+    #Finances a span {
+        border-color: #95b1c2;
+    }
+    #Teams a span {
+        border-color: #2ebeef;
+    }
+    #Ind a span {
+        border-color: #abe1fa;
+    }
+    #Diag a span {
+        border-color: #a03522;
+    }
+    #Project a span {
+        border-color: #d6acaa;
+    }
+  
+    #Geo a span {
+        border-color: #f68628;
+    }
+    #Mie a span {
+        border-color: #fdcdab;
+    }
+    #Info a span {
+        border-color: ##2f4050;
+    }
     </style>
 
     <!-- Facebook Open Graph -->
@@ -72,12 +179,38 @@
 
 </head>
 <body  class="">
+    <!-- view movil -->
+        <div id="appbar" class="visible-xs visible-sm" style="background-color: #2f4050; width: 500;" >
+          <h1 id="logo"><img src="{{asset('img/logoepsum-2.png')}}" alt="logo-epsum" width="48" height="32" style="cursor: pointer;" onclick=""></h1>
+          <h5 style="text-align: center;"><a class="title-app" style="color:white;" width="48" height="32">ESTADÍSTICAS</a></h5>
+          <nav id="navigation">
 
+                    <div class="control-menu">
+                        <a href="#navigation" class="open "><i class="fa fa-bars" style="font-size:31px; color: #F4F6F7;"></i></a>
+                        <a href="#" class="close"><i class="fa fa-times" style="font-size:31px; color: #F4F6F7;"></i></a>
+                    </div>
+
+            
+            <ul class="nav-items">
+                    <li id="Student"><a href="{{url('stats/students')}}" > <span>Estudiantes</span> </a></li>
+                    <li id="Finances"><a href="{{url('stats/financing')}}"  > <span>Financiamiento</span> </a></li>
+                    <li id="Teams"><a href="{{url('stats/teams')}}" > <span>Equipos</span> </a></li>
+                    <li id="Ind"><a href="{{url('stats/goodsservices')}}" > <span>Bienes y Servicios</span> <span class="label label-success">Nuevo</span></a></li>
+                   <!-- <li id="Diag"><a href="{{url('stats/diagnostics')}}" > <span>Diagnósticos</span> </a></li>
+                    <li id="Project"><a href="{{url('stats/projects')}}" > <span>Proyectos</span> </a></li>-->
+                    <li id="Project"><a href="{{url('request/getRequest')}}" > <span>Solicitud de disciplinas</span> </a></li>
+                    <li id="Geo"><a href="{{url('map/')}}" > <span>Ir a Geoportal</span> </a></li>
+                    <li id="Mie"><a href="{{url('login/')}}" > <span>Ir a MiE 2.0</span> </a></li>
+                    <li id="Info"><a data-toggle="modal" data-target="#modalInfo"><span>Más información</span></a></li>            
+            </ul>
+
+	      </nav>
+        </div>
   <!-- Wrapper-->
-    <div id="wrapper">
-
+    <div id="wrapper" >
+        
         <!-- Navigation -->
-        <div>
+        <div class="visible-md visible-lg">
           <div class="stats-header">
             <a  href="{{url('stats/')}}"><img src="{{asset('img/logoepsum-2.png')}}" alt="logo-epsum" width="100px" height="auto" style="padding-bottom:0; cursor: pointer;" onclick=""></a>
             <p style="color:white;font-size:20px;font-weight:bold;margin-bottom:0px;">ESTADÍSTICAS</p>
@@ -88,8 +221,10 @@
             <a href="{{url('stats/students')}}" class="btn btn-primary stats-button" style="margin-top:200px;" > Estudiantes </a>
             <a href="{{url('stats/financing')}}" class="btn btn-primary stats-button" > Financiamiento </a>
             <a href="{{url('stats/teams')}}" class="btn btn-primary stats-button"> Equipos </a>
-            <a href="{{url('stats/diagnostics')}}" class="btn btn-primary stats-button"> Diagnósticos </a>
+            <a href="{{url('stats/goodsservices')}}" class="btn btn-primary stats-button"> Bienes y Servicios <span class="label label-success">Nuevo</span></a>
+           <!-- <a href="{{url('stats/diagnostics')}}" class="btn btn-primary stats-button"> Diagnósticos </a>-->
             <a href="{{url('stats/projects')}}" class="btn btn-primary stats-button"> Proyectos </a>
+            <a href="{{url('request/getRequest')}}" class="btn btn-primary stats-button"> Solicitud de disciplinas </a>
             <hr style="border-color:#ffffff22">
             <a href="{{url('map/')}}" class="btn btn-primary stats-button"> Ir a Geoportal </a>
             <a href="{{url('login/')}}" class="btn btn-primary stats-button"> Ir a MiE 2.0 </a>
@@ -102,10 +237,11 @@
           </div>
         </div>
         <!-- Page wraper -->
-        <div id="page-wrapper" style="background-color:white">
+        <div id="page-wrapper" style="background-color:white" >
 
             <!-- Main view  -->
             <div class="wrapper wrapper-content animated fadeInRight">
+
             @yield('place')
             </div>
 
@@ -126,7 +262,7 @@
           <div class="modal-body">
             <p>Estadísticas de EPSUM es un proyecto basado en los datos registrados en el Sistema MiE 2.0, mismos que son ingresados por los estudiantes como parte de su trabajo realizado con EPSUM, desde su proceso de registro en la plataforma, hasta el ingreso de sus informes diagnósticos y de proyectos.</p>
 
-            <p><strong>Estadísticas de EPSUM fue desarrollado por Carlos Paiz, de la Carrera de Ingeniería en Ciencias y Sistemas, del Centro Universitario de Oriente. Guatemala, 2018.<br><br>"Id y enseñad a todos."</strong></p>
+            <p><strong>Estadísticas de EPSUM fue desarrollado por Carlos Paiz, de la Carrera de Ingeniería en Ciencias y Sistemas, del Centro Universitario de Oriente. Guatemala, 2018. La versión 2.0 de estadística fue desarrollado por Luis Felipe Dubón Obando, de la Carrera de Ingeniería en Ciencias y Sistemas, del Centro Universitario de Oriente. Guatemala, 2019. <br><br>"Id y enseñad a todos."</strong></p>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-primary" data-dismiss="modal">¡Entendido!</button>
@@ -138,6 +274,7 @@
     @include('template/scripts')
 
     @section('script')
+    
     @show
 
 </body>

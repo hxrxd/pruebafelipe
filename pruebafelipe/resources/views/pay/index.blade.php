@@ -25,7 +25,6 @@
                     </p>
 
                            <a href="{{ url('getpay')}}" class="btn btn-success" role="button"><i class="fa fa-download"></i> Descargar</a>
-                            <a href="{{ url('getpayinfo')}}" class="btn btn-info" role="button"><i class="fa fa-file-o"></i> Reporte</a>
 
                      
 

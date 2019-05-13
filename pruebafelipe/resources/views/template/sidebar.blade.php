@@ -62,7 +62,7 @@
       <li >
         <a href="#"><i class="fa fa-file-text"></i> <span class="nav-label">Informes</span> <span class="fa arrow"></span></a>
         <ul class="nav nav-second-level">
-          <li><a href="{{ url('plan')}}">Mensual </a></li>
+          <li><a href="{{ url('plan')}}">Mensual <p class="badge badge-success">Nuevo</p></a></li>
           <li><a href="{{ url('dx/')}}">Diagnóstico</a></li>
           <li><a href="#">Plan de Trabajo <span class="fa arrow"></span></a>
             <ul class="nav nav-third-level">
@@ -106,6 +106,7 @@
             <li><a href="{{ url('settlement')}}">Finiquitos <p class="badge badge-success">Nuevo</p></a></li>
             <li><a href="{{ url('statuses')}}">Estado del Expediente</a></li>
             <li><a href="{{ url('check')}}">Cheques</a></li>
+            <li><a href="{{ url('requestdisciplines')}}">Solicitud de disciplinas <p class="badge badge-success">Nuevo</p></a></li>
             settlement
           </ul>
       </li>
@@ -124,7 +125,7 @@
           <li><a href="{{ url('stats/students')}}">Estudiantes</a></li>
           <li><a href="{{ url('stats/financing')}}">Financiamiento</a></li>
           <li><a href="{{ url('stats/teams')}}">Equipos</a></li>
-          <li><a href="{{ url('stats/diagnostics')}}">Diagnósticos</a></li>
+          <li><a href="{{ url('stats/goodsservices')}}">Bienes y servicios</a></li>
           <li><a href="{{ url('stats/projects')}}">Proyectos</span></a></li>
         </ul>
       </li>
@@ -183,6 +184,7 @@
             <li><a href="{{ url('getacuerdo')}}">Generar Listado Acuerdo</a></li>
             <li><a href="{{ url('getAppraisals')}}">Evaluación de Supervisores</a></li>
             <li><a href="municipality">Ingresar Municipalidad</a></li>
+            <li><a href="{{ url('requestsupervisor')}}">Solucitud de disciplinas <p class="badge badge-success">Nuevo</p></a></li>
           </ul>
       </li>
 

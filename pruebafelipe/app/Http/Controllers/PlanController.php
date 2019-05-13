@@ -86,23 +86,13 @@ class PlanController extends Controller
         }else{
           $supervisor = Supervisor::where('iduser','=',$user->id)->first();
 
-          $missed = DB::table('plan')
-                    ->join('students','plan.student','=','students.id_student')
-                    ->join('teams','plan.team','=','teams.id_team')
-                    ->join('supervisors','teams.supervisor','=','supervisors.id_supervisors')
-                    ->where('teams.supervisor','=',$supervisor->id_supervisors)
-                    ->where('plan.status',0)
-                    ->select('plan.id as id','students.name as name','students.fsurname as fsurname','students.ssurname as lsurname','teams.name as team','plan.num_correction as num_correction','plan.month as month',DB::raw("date_format(plan.updated_at,'%d/%m/%Y') as updated"),'plan.status as status')
-                    ->orderBy('students.fsurname', 'asc')
-                    ->get();
-
           $not_reviewed = DB::table('plan')
                     ->join('students','plan.student','=','students.id_student')
                     ->join('teams','plan.team','=','teams.id_team')
                     ->join('supervisors','teams.supervisor','=','supervisors.id_supervisors')
                     ->where('teams.supervisor','=',$supervisor->id_supervisors)
                     ->where('plan.status',1)
-                    ->select('plan.id as id','students.name as name','students.fsurname as fsurname','students.ssurname as lsurname','teams.name as team','plan.num_correction as num_correction','plan.month as month',DB::raw("date_format(plan.updated_at,'%d/%m/%Y') as updated"),'plan.status as status')
+                    ->select('plan.id as id','students.name as name','students.fsurname as fsurname','students.ssurname as lsurname','teams.name as team','plan.month as month',DB::raw("date_format(plan.updated_at,'%d/%m/%Y') as updated"),'plan.status as status')
                     ->orderBy('plan.updated_at', 'asc')
                     ->get();
 
@@ -112,7 +102,7 @@ class PlanController extends Controller
                     ->join('supervisors','teams.supervisor','=','supervisors.id_supervisors')
                     ->where('teams.supervisor','=',$supervisor->id_supervisors)
                     ->where('plan.status',2)
-                    ->select('plan.id as id','students.name as name','students.fsurname as fsurname','students.ssurname as lsurname','teams.name as team','plan.num_correction as num_correction','plan.month as month',DB::raw("date_format(plan.updated_at,'%d/%m/%Y') as updated"),'plan.status as status')
+                    ->select('plan.id as id','students.name as name','students.fsurname as fsurname','students.ssurname as lsurname','teams.name as team','plan.month as month',DB::raw("date_format(plan.updated_at,'%d/%m/%Y') as updated"),'plan.status as status')
                     ->orderBy('plan.updated_at', 'asc')
                     ->get();
 
@@ -122,12 +112,12 @@ class PlanController extends Controller
                     ->join('supervisors','teams.supervisor','=','supervisors.id_supervisors')
                     ->where('teams.supervisor','=',$supervisor->id_supervisors)
                     ->where('plan.status',3)
-                    ->select('plan.id as id','students.name as name','students.fsurname as fsurname','students.ssurname as lsurname','teams.name as team','plan.num_correction as num_correction','plan.month as month',DB::raw("date_format(plan.updated_at,'%d/%m/%Y') as updated"),'plan.status as status')
+                    ->select('plan.id as id','students.name as name','students.fsurname as fsurname','students.ssurname as lsurname','teams.name as team','plan.month as month',DB::raw("date_format(plan.updated_at,'%d/%m/%Y') as updated"),'plan.status as status')
                     ->orderBy('plan.updated_at', 'asc')
                     ->get();
         }
 
-        return view('informs.monthly_plan_supervisor_index', compact('supervisor','reviewed','not_reviewed','historial','missed'));
+        return view('informs.monthly_plan_supervisor_index', compact('supervisor','reviewed','not_reviewed','historial'));
     }
 
     /**
@@ -335,14 +325,6 @@ class PlanController extends Controller
           $user_supervisor =  User::find($supervisor->iduser);
           $email_sup = $user_supervisor->email;
 
-          $results = DB::table('results')
-                  ->select('results.description as description','results.id as id')
-                  ->where('id','!=',1)
-                  ->orderBy('description','asc')
-                  ->get();
-
-          $objectives_suggests = DB::table('objectives_suggests')->get();
-
           $objective = DB::table('objectives')
                     ->join('plan_objectives','objectives.id','=','plan_objectives.objective')
                     ->join('plan','plan_objectives.plan','=','plan.id')
@@ -353,9 +335,9 @@ class PlanController extends Controller
           $objectives_count = count($objective);
 
           if($report->status == 2){
-              return view("informs.monthly_plan_reviewed",compact('report','student','hq','team','municipality','department','year','how_many_days','objective','objectives_count','report_type','username','email_sup','results','objectives_suggests'));
+              return view("informs.monthly_plan_reviewed",compact('report','student','hq','team','municipality','department','year','how_many_days','objective','objectives_count','report_type','username','email_sup'));
           }else{
-              return view("informs.monthly_plan_student_preview",compact('report','student','hq','team','municipality','department','year','how_many_days','objective','objectives_count','report_type','email_sup','username','results'));
+              return view("informs.monthly_plan_student_preview",compact('report','student','hq','team','municipality','department','year','how_many_days','objective','objectives_count','report_type','email_sup','username'));
           }
 
         }else{
@@ -453,22 +435,6 @@ class PlanController extends Controller
     }
 
     /**
-     * Update the correction number for a plan.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function updateNumCorrection(Request $request)
-    {
-        $plan = Plan::find($request->id);
-        $plan->num_correction = $request->num_correction;
-        $plan->save();
-
-        return Response::json($plan);
-    }
-
-    /**
      * Update the validated status of specified plan.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -542,7 +508,6 @@ class PlanController extends Controller
                   ->select('objectives.*')
                   ->get();
 
-	$text_experiences = str_replace("<br>","",$report->experiences);	
 
         $document = new \PhpOffice\PhpWord\TemplateProcessor('doc/informe-mensual-tmp.docx');
         $document->setValue('nc',($nc === null)?'':$nc->contract_number);
@@ -560,25 +525,19 @@ class PlanController extends Controller
         $document->setValue('academic_u',$student->academicu);
         $document->setValue('report_type_up',strtoupper($report_type));
         $document->setValue('period',($report_type=="mensual")?"el mes":"la quincena");
-        $document->setValue('experiences',str_replace("\n","</w:t><w:br/><w:t>",$text_experiences));
+        $document->setValue('experiences',str_replace("\n","</w:t><w:br/><w:t>",$report->experiences));
         $document->setValue('practice',$practice);
-        //$document->setValue('supervisor_hq',""$supervisor_hq->name"");
-        //$document->setValue('supervisor_charge',$supervisor_hq->place);
+        $document->setValue('supervisor_hq',$supervisor_hq->name);
+        $document->setValue('supervisor_charge',$supervisor_hq->place);
 
         $document->cloneRow('objective', count($objectives));
 
         for($i =0;$i<count($objectives);$i++) {
-          $text_objective = str_replace("<br>","",$objectives[$i]->objective);
-          $text_results = str_replace("<br>","",$objectives[$i]->results);
-          $text_activities = str_replace("<br>","",$objectives[$i]->activities);
-          $text_hits = str_replace("<br>","",$objectives[$i]->hits);
-          $text_failures = str_replace("<br>","",$objectives[$i]->failures);
-
-          $document->setValue('objective#'.($i+1).'',$text_objective);
-          $document->setValue('results#'.($i+1).'',str_replace("\n","</w:t><w:br/><w:t>",$text_results));
-          $document->setValue('activities#'.($i+1).'',str_replace("\n","</w:t><w:br/><w:t>",$text_activities));
-          $document->setValue('hits#'.($i+1).'',$text_hits);
-          $document->setValue('failures#'.($i+1).'',$text_failures);
+          $document->setValue('objective#'.($i+1).'',$objectives[$i]->objective);
+          $document->setValue('results#'.($i+1).'',str_replace("\n","</w:t><w:br/><w:t>",$objectives[$i]->results));
+          $document->setValue('activities#'.($i+1).'',str_replace("\n","</w:t><w:br/><w:t>",$objectives[$i]->activities));
+          $document->setValue('hits#'.($i+1).'',$objectives[$i]->hits);
+          $document->setValue('failures#'.($i+1).'',$objectives[$i]->failures);
         }
 
         $filename = 'informe-'.$report->month.'-'.$year.'-'.$student->carne.'.docx';

@@ -201,7 +201,7 @@ class CheckController extends Controller
         $arraychecks = trim(preg_replace('/\r/', ' ', $checks));
         $arraychecks = trim(preg_replace('/\r\n/', ' ', $arraychecks));
         $arraychecks = str_replace(' ', '', $arraychecks);
-        $arraychecks =  explode('.',  $arraychecks);
+        $arraychecks =  explode(',',  $arraychecks);
        
         if ($type == 1){
             // cheques entregados

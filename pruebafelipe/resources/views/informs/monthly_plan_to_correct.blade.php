@@ -21,7 +21,6 @@
                         <h3>Registro académico No. {{$student->carne}}</h3>
                         <h3>{{$student->academicu}}</h3><br><br>
                         <button type="button" id="show-button" class="cool-button hvr-grow"><i class="fa fa-arrow-down"></i> Desplazar al contenido de informe</button><br><br>
-                        <span class="badge badge-warning" style="font-size:16px">Correción #{{$report->num_correction}}</span>
                         <p style="color:#2ebeef"><strong>Entregado el {{$delivery_date}} a las {{$delivery_time}}</strong></p>
                     </div>
                 </div>
@@ -38,7 +37,6 @@
             <a id="menu-activities" class="text-menu-report">Actividades</a><br><br><br>
             <h3>{{$student->name.' '.$student->fsurname.' '.$student->ssurname}}</h3>
             <p><strong>{{$student->carrer}}</strong>, {{$student->academicu}}</p><br>
-            <span class="badge badge-info">Correción #{{$report->num_correction}}</span>
             <h4>Informe {{$report_type}} de actividades</h4>
             <p>Período comprendido del {{($report_type == "mensual")?1:15}} al {{$how_many_days}} de {{$report->month}} de {{$year}}</p><br>
             <h4>{{$hq->name}}</h4>
@@ -49,12 +47,6 @@
           </div>
           <div id="experiences-box" class="col-sm-9">
             <h2 style="padding:96px 48px 0px 48px;font-weight:bold;font-size:18">Informe narrativo de las experiencias aprehendidas en {{($report_type=="mensual")?"el mes":"la quincena"}} de {{$report->month}}</h2>
-
-            <div class="announcement animated fadeInDown">
-              <h3>Mejoras en corrección de informe narrativo</h3>
-              <p>Ahora verás las correcciones que hiciste, incluso si saliste del informe y vuelves a consultarlo en otro momento. Corrección de error de texto truncado. Este mensaje removido luego.</p>
-            </div>
-
             <textarea id="experiences-original" class="experiences-input-corrections" maxlength="2000" rows="27">{{$report->experiences}}</textarea>
             <textarea id="experiences-correction" class="experiences-input-corrections" maxlength="2000">{{$report->experiences_corrections}}</textarea>
             <textarea id="experiences-edit" class="experiences-input-corrections" maxlength="2000" rows="27">{{$report->experiences}}</textarea>
@@ -68,11 +60,6 @@
 
 
             <h2 id="activities" style="padding:96px 48px 0px 48px;font-weight:bold;font-size:18">Descripción de actividades ejecutadas durante el {{($student->practice == 1)?"EPS":"PPS"}}</h2>
-
-            <div class="announcement animated fadeInDown">
-              <h3>Novedades en la descripción de actividades</h3>
-              <p>Para mayor confianza al guardar las correcciones, ahora tienes la opción <strong>Guardar corrección</strong> al lado del campo del comentario, por lo que debes tomar en cuenta que la corrección <strong>ya no se guarda automáticamente</strong>. Además, se agregó la opción <strong>Aprobar</strong>, que únicamente agrega el texto "APROBADO" en el campo de corrección. Si equivocadamente seleccionaste <strong>Aprobar</strong>, puedes borrar el texto. Recuerda que si no escribes una corrección en un campo, el estudiante verá el texto <strong>"No necesitas hacer correcciones para este objetivo"</strong> en la vista de correcciones de su informe.<br><br>Este mensaje es temporal y será removido pronto.</p>
-            </div>
 
             <div>
               <div class="table-responsive">
@@ -98,10 +85,8 @@
                     </tr>
 
                     <tr id="comment-{{$o->id}}" class="row-table-corrections-comment">
-                      <td colspan="3"><textarea id="text-comment-{{$o->id}}" class="comment-table-corrections comment-correction" placeholder="Escribe algunas observaciones o comentarios" maxlength="1500" rows="1" onclick="expand(this)" onmouseover="setCommentLines(this)">{{$o->objective_corrections}}</textarea></td>
-                      <td colspan="2"><button type="button" class="cool-button-secoundary hvr-grow" style="margin-left:10px;" onclick="saveObjectiveCorrection({{$o->id}},'#d4fcbc')">Guardar corrección</button><br><button type="button" class="cool-button-secoundary hvr-grow" style="margin-left:10px;" onclick="validateObjective({{$o->id}},'#d5f6ff')">Aprobar</button></td>
+                      <td colspan="5"><textarea class="comment-table-corrections comment-correction" placeholder="Escribe algunas observaciones o comentarios" maxlength="512" rows="1" onclick="expand(this)" onmouseover="setCommentLines(this)" onfocusout="saveObjectiveCorrection(this,{{$o->id}})">{{$o->objective_corrections}}</textarea></td>
                     </tr>
-
                     @endforeach
                   @endif
                   </tbody>
@@ -209,11 +194,6 @@ function onScroll(e) {
 
 }
 document.addEventListener('scroll', onScroll);
-
-//init corrections
-if(`{{$report->experiences_corrections}}` != ""){
-  experiences.innerHTML = htmldiff($('#experiences-original').val(),$('#experiences-correction').val());
-}
 
 //go to from menu
 $('#show-button').click( function(){
@@ -359,7 +339,7 @@ function setCommentLines(item){
   item.rows = lines-1;
 }
 
-function saveObjectiveCorrectionDeprecated(item,id){
+function saveObjectiveCorrection(item,id){
   if(current_comment_table.value == "" || current_comment_table.value == "• "){
     current_comment_table.value = "";
   }else{
@@ -385,37 +365,6 @@ function saveObjectiveCorrectionDeprecated(item,id){
     });
   }
 
-  item.rows = Math.floor(item.scrollHeight/20)-1;
-}
-
-function saveObjectiveCorrection(id,color){
-  current_comment_table = document.getElementById('text-comment-'+id);
-  if(current_comment_table.value == "" || current_comment_table.value == "• "){
-    current_comment_table.value = "";
-  }else{
-    $.ajax({
-        type: 'post',
-        url: '{{asset("add/objcorrection")}}',
-        data: {
-            '_token': "{{ csrf_token() }}",
-            'id': id,
-            'corrections': current_comment_table.value
-        },
-        success: function(data) {
-            if (data.errors) {
-                console.log('ERROR_UPD_OBJECTIVE_CORRECTIONS');
-            } else {
-                are_there_corrections = true;
-                current_comment_table.style.backgroundColor = color;
-                updateCorrectionsStatus("• Observación en objetivo: " + "\"" + current_comment_table.value.substring(2,25) + "...\"");
-                console.log('SUCCESS_UPD_OBJECTIVE_CORRECTIONS');
-                logThis(4,data);
-            }
-        },
-    });
-  }
-
-  var item = document.getElementById('text-comment-'+id);
   item.rows = Math.floor(item.scrollHeight/20)-1;
 }
 
@@ -476,10 +425,10 @@ $('#send-corrections').click(function(){
     updateStatus(2);
     makeNotification();
     swal("¡Informe revisado!", "El informe fue devuelto al estudiante", "success");
-
+    
     setTimeout(function(){
       location.href="{{ url('plan/monthly/all')}}";
-    }, 1000);
+    }, 700);
   }else{
     swal({
         title: "¿Estás seguro de que este infome no necesita correcciones?",
@@ -497,7 +446,7 @@ $('#send-corrections').click(function(){
 
         setTimeout(function(){
           location.href="{{ url('plan/monthly/all')}}";
-        }, 1000);
+        }, 700);
     });
   }
 
@@ -531,11 +480,6 @@ function updateStatus(status){
           }
       },
   });
-}
-
-function validateObjective(id,color){
-  document.getElementById('text-comment-'+id).value = '• APROBADO';
-  saveObjectiveCorrection(id,color);
 }
 
 $('#go-up').click(function(){

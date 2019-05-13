@@ -156,7 +156,6 @@ var menu_rep = document.getElementById('menu-report');
 var menu_act = document.getElementById('menu-activities');
 var experiences = document.getElementById('experiences');
 var send_button = document.getElementById('send-button');
-var num_correction = parseInt("{{$report->num_correction}}");
 
 //positioning-bar
 menu_bar.style.top = "0px";
@@ -220,8 +219,6 @@ function disableMenuSelected(){
 
 $('#send-button').click(function(){
   updateStatus(1);
-  updateNumCorrection();
-  updateExperiencesCorrections('');
   notify(
     '{{asset("send/notification")}}', //url
     '{{$username}}', //title of notification
@@ -233,7 +230,7 @@ $('#send-button').click(function(){
   swal("¡Informe enviado!", "El informe fue enviado a tu supervisor", "success");
   setTimeout(function(){
     location.href="{{ url('plan/month/'.$report->nmonth)}}";
-  }, 800);
+  }, 700);
 });
 
 
@@ -251,44 +248,6 @@ function updateStatus(status){
               console.log('ERROR_UPD_PLAN_STATUS');
           } else {
               console.log('SUCCESS_UPD_PLAN_STATUS');
-          }
-      },
-  });
-}
-
-function updateNumCorrection(){
-  $.ajax({
-      type: 'post',
-      url: '{{asset("update/num_correction")}}',
-      data: {
-          '_token': "{{ csrf_token() }}",
-          'id': '{{$report->id}}',
-          'num_correction': (num_correction += 1)
-      },
-      success: function(data) {
-          if (data.errors) {
-              console.log('ERROR_REG_NUM_CORRECTION');
-          } else {
-              console.log('SUCCESS_REG_NUM_CORRECTION');
-          }
-      },
-  });
-}
-
-function updateExperiencesCorrections(text){
-  $.ajax({
-      type: 'post',
-      url: '{{asset("update/expcorrections")}}',
-      data: {
-          '_token': "{{ csrf_token() }}",
-          'id': '{{$report->id}}',
-          'experiences': text
-      },
-      success: function(data) {
-          if (data.errors) {
-              console.log('ERROR_UPD_EXPERIENCES_CORRECTIONS');
-          } else {
-              console.log('SUCCESS_UPD_EXPERIENCES_CORRECTIONS');
           }
       },
   });

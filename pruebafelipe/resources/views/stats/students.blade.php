@@ -8,10 +8,27 @@
     <h1>Reporte General de Estudiantes</h1>
 		<h4>Programa del Ejercicio Profesional Supervisado Multidisciplinario</h4>
 
+    
+      <form id="selectRE">
+        <div class="form-group">
+          <label for="sel1">Lista de tipos de reportes:</label>
+          <select class="form-control" id="sel1">
+            <option selected>Seleccione ...</option>
+            <option value="rE">Resumen de Estudiantes</option>
+            <option value="ExUA">Estudiantes por Unidad Académica</option>
+            <option value="ExD">Estudiantes por Disciplina</option>
+            <option value="ExTP">Estudiantes por Tipo de Práctica</option>
+          </select>
+          <div class="input-group-append">
+            <button id="btnS" class="btn btn-outline-secondary" type="button">Seleccionar</button>
+          </div>
+        </div>
+      </form>
 
+  <div id="rE">
 		<h2>Resumen de Estudiantes</h2>
 		<div style="margin-bottom: 20px;">
-			<table class="table" style="width:100%">
+			<table class="table " style="width:100%">
         <thead>
 					<tr>
             <th>Total Estudiantes</th>
@@ -29,8 +46,8 @@
       </table>
 		</div>
 
-		<div style="margin-bottom: 20px;">
-			<table class="table" style="width:100%">
+		<div style="margin-bottom: 20px;" class="table-responsive">
+			<table class="table datatable responsive" style="width:100%">
         <thead>
 					<tr>
             <th>Cohorte</th>
@@ -68,10 +85,11 @@
         </tbody>
       </table>
 		</div>
+  </div>
 
-
+  <div id="ExUA">
     <h2>Estudiantes por Unidad Académica</h2>
-    <div id="header-1" style="background-color:white;margin-bottom: 20px;">
+    <div id="header-1" class="table-responsive" style="background-color:white;margin-bottom: 60px;">
 			<table class="table" style="width:100%">
         <thead>
 					<tr>
@@ -93,34 +111,23 @@
 		</div>
 
     <div id="fly-away-1" style="margin-bottom: 60px;">
-      <div>
+      <div id="bye">
+      <!--  <table id="table_id" class="table display responsive no-wrap" style="width:100%">
+        </table>-->
+        <div id="tableUA" class="form-horizontal"></div>
         <table class="table" style="width:100%">
           <thead>
-            <tr>
-              <th>Unidad Académica</th>
-              <th style="text-align:right;">Hombres</th>
-              <th style="text-align:right;">Mujeres</th>
-              <th style="text-align:right;">Total</th>
-              <th style="text-align:right;">% Hombres</th>
-              <th style="text-align:right;">% Mujeres</th>
-              <th style="text-align:right;">% del Total de Estudiantes</th>
+					  <tr>
+            <th></th>
+            <th style="text-align:right;">Hombres</th>
+						<th style="text-align:right;">Mujeres</th>
+            <th style="text-align:right;">Total</th>
+            <th style="text-align:right;"></th>
+            <th style="text-align:right;"></th>
+            <th style="text-align:right;"></th>
             </tr>
           </thead>
-          <tbody class="content-1">
-            @foreach($stds_by_au as $sba)
-
-            <tr>
-              <td>{{ $sba->au }}</td>
-              <td style="text-align:right;">{{ number_format($sba->men) }}</td>
-              <td style="text-align:right;">{{ number_format($sba->women) }}</td>
-              <td style="text-align:right;">{{ number_format($sba->numstds) }}</td>
-              <td style="text-align:right;">{{ number_format($sba->men * 100 / $sba->numstds,2) }}%</td>
-              <td style="text-align:right;">{{ number_format($sba->women * 100 / $sba->numstds,2) }}%</td>
-              <td style="text-align:right;">{{ number_format($sba->numstds * 100 / $total_stds,2) }}%</td>
-            </tr>
-
-            @endforeach
-
+          <tbody>
             <tr>
               <td class="color-blue" style="font-size:16px;">Total</td>
               <td class="color-blue" style="text-align:right; font-weight:bold; font-size:16px;">{{ number_format($total_stds_men) }}</td>
@@ -134,8 +141,10 @@
         </table>
       </div>
     </div>
+  </div>
+  <div id="dataUA">@foreach($stds_by_au as $sba)["{{ $sba->au }}", "{{ number_format($sba->men) }}", "{{ number_format($sba->women) }}", "{{ number_format($sba->numstds) }}", "{{ number_format($sba->men * 100 / $sba->numstds,2) }}%", "{{ number_format($sba->women * 100 / $sba->numstds,2) }}%", "{{ number_format($sba->numstds * 100 / $total_stds,2) }}%"],@endforeach</div>
 
-
+  <div id="ExD">
     <h2>Estudiantes por Disciplina</h2>
 
     <div style="margin-bottom: 20px;">
@@ -160,7 +169,7 @@
 		</div>
 
     <div style="margin-bottom: 60px;">
-      <div>
+      <div class="table-responsive">
         <table class="table" style="width:100%">
           <thead>
             <tr>
@@ -201,7 +210,8 @@
         </table>
       </div>
     </div>
-
+  </div>
+  <div id="ExTP">
     <h2>Estudiantes por Tipo de Práctica</h2>
     <div style="margin-bottom: 20px;">
 			<table class="table" style="width:100%">
@@ -225,7 +235,7 @@
 		</div>
 
     <div id="fly-away-1" style="margin-bottom: 60px;">
-      <div>
+      <div class="table-responsive">
         <table class="table" style="width:100%">
           <thead>
             <tr>
@@ -254,7 +264,7 @@
         </table>
       </div>
     </div>
-
+  </div>
   </div>
 
   <div style="display:none" id="loader-modal"></div>
@@ -282,11 +292,119 @@
 @endsection
 
 @section('script')
-
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.2/css/responsive.dataTables.min.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/responsive/2.2.2/js/dataTables.responsive.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 <script src="https://codepen.io/anon/pen/aWapBE.js"></script>
 <script type="text/javascript">
+    var isMobile = {
+    Android: function() {
+        return navigator.userAgent.match(/Android/i);
+    },
+    BlackBerry: function() {
+        return navigator.userAgent.match(/BlackBerry/i);
+    },
+    iOS: function() {
+        return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+    },
+    Opera: function() {
+        return navigator.userAgent.match(/Opera Mini/i);
+    },
+    Windows: function() {
+        return navigator.userAgent.match(/IEMobile/i);
+    },
+    any: function() {
+        return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
+    }
+  };
+  function resizePadding() {
+    if(isMobile.any()) {
+      jQuery("#frame").css("padding", "5px")
+    }else{
+      jQuery("#frame").css("padding", "60px")
+    }
+  }
 
+  
+  function convertObjectJSON(data) {
+    var newData = '['+data+']';
+    return JSON.parse(newData);
+  }
+
+  function deleteLastC(data) {
+    return data.substr(0,data.length-1);
+  }
+  var languageData = '{"processing":"Cargando datos...","search": "Buscar","lengthMenu": "Mostrar _MENU_ datos","info": "Numero de páginas mostradas _PAGE_ of _PAGES_","infoEmpty":"No se encuentra datos disponibles","infoFiltered":"(Filtrado por _MAX_ total de datos)","loadingRecords": "Cargando datos...","zeroRecords":"No se encuentra información - Lo sentimos","emptyTable":"No se encuentra datos disponibles","paginate": {"first":"Primera","previous":"Anterior","next":"Siguiente","last":"Última"}}';
+  var objLanguage = JSON.parse(languageData);
+
+  function initTableUA() {
+    var table;
+    var dataSet = convertObjectJSON(deleteLastC(jQuery('#dataUA').text()));
+    console.log(dataSet);
+    jQuery('#tableUA').html('');
+    jQuery('<table/>',{
+                        'class': 'table-striped table-hover display responsive no-wrap table table-striped table-hover dt-responsive display nowrap',
+                        'cellspacing':'0',
+                        'id': 'table_id',
+                        'width': '100%'
+                    }).appendTo('#tableUA');
+      table = jQuery('#table_id').DataTable({ "lengthMenu": [[-1], ["Todos"]], responsive: true, "language": objLanguage,
+        data: dataSet,
+        columns: [
+            { title: "Unidad Académica" },
+            { title: "Hombres" },
+            { title: "Mujeres" },
+            { title: "Total" },
+            { title: "% Hombres" },
+            { title: "% Mujeres" },
+            { title: "% de Total de Estudiantes" }
+        ]
+   });
+   table.search('Centro Universitario de Oriente').draw();
+  }
+
+  function getReport(e) {
+    e.preventDefault();
+    var data = jQuery("#sel1").val();
+    if (data.trim()=="rE") {
+      jQuery("#rE").show();
+    } else if (data.trim()=="ExUA") {
+      initTableUA();
+      jQuery("#ExUA").show();
+      if(jQuery(window).width() < 768){
+        //document.getElementById("ExUA").reload();
+        console.log("Ingreso");
+        initTableUA();
+      }
+    } else if(data.trim()=="ExD"){
+      jQuery("#ExD").show();
+    } else if(data.trim()=="ExTP"){
+      jQuery("#ExTP").show();
+    }
+  }
+ 
+			
+  function hideReport() {
+    jQuery("#ExTP").hide();
+    jQuery("#ExD").hide();
+    jQuery("#ExUA").hide();
+    jQuery("#rE").hide();
+  }
+  
+  jQuery(document).ready(function() {
+    jQuery("#btnS").click(getReport);
+    jQuery("#sel1").change(hideReport);
+    resizePadding();
+    hideReport();
+    jQuery('#dataUA').hide();
+
+  });
+
+  jQuery(window).resize(function(){
+    resizePadding();
+   });
   $(window).on('load',function(){
       //$('#myModal').modal('show');
   });
@@ -626,4 +744,5 @@
   }
 </style>
 
+<div id="foot"></div>
 @endsection

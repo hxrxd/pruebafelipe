@@ -8,7 +8,7 @@ class Plan extends Model
 {
     protected $table = 'plan';
 
-    protected $fillable = ['month','nmonth','experiences','validated','status','num_correction','experiences_corrections','student','team','cohort','user_create','user_update','updated_at'];
+    protected $fillable = ['month','nmonth','experiences','validated','status','experiences_corrections','student','team','cohort','user_create','user_update','updated_at'];
 
     protected $primaryKey = 'id';
 }

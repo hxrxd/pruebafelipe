@@ -410,7 +410,10 @@
               <a href="{{url('stats/')}}" type="button" style="color:white;font-size:18px;font-weight:bold;"><div style="margin:auto;padding:10px;background-color:#f68628;color:white;font-size:16px;border-radius:4px;text-align:center">
                 Ver estadísticas completas
               </div></a>
-
+              </br>
+              <a href="{{url('request/getRequest')}}" type="button" style="color:white;font-size:18px;font-weight:bold;"><div style="margin:auto;padding:10px;background-color:#2ebeef;color:white;font-size:16px;border-radius:4px;text-align:center">
+                Solicitud de disciplinas
+              </div></a>
             <!--<div class="stats">
               <table id="sumary" class="table table-hover dataTables-example" >
                 <thead>

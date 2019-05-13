@@ -11,7 +11,7 @@
                    <br/><h3>Proceso de liquidación de cheques</h3></h2>
 
                     <p> 
-                    Ingresar los números de cheques separados por puntos y sin espacios, la fecha a modificar y que campo desea actualizar
+                    Ingresar los números de cheques separados por comas y sin espacios, la fecha a modificar y que campo desea actualizar
                     </p>
 
 

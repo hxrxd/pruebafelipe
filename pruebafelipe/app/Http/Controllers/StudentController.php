@@ -27,6 +27,7 @@ use App\Family;
 use App\Contract;
 use App\Status;
 use App\Check;
+use App\RequerimentsAssignment;
 use DB;
 use Auth;
 
@@ -201,10 +202,6 @@ class StudentController extends Controller
     }
 
 
-
-
-
-
     /**
      * Show the form for creating a new resource.
      *
@@ -229,11 +226,13 @@ class StudentController extends Controller
     public function store(Request $request)
     {
         //
-
-        $h = Headquarters::find($request['headquarter']);
+        $long= explode('-', $request['headquarter']);
+        $h = Headquarters::find($long['0']);
         $t = Team::find($h->team);
 
-
+        $requestRequeriment = RequerimentsAssignment::find($long['1']);
+        $requestRequeriment->value = 2;
+        $requestRequeriment->save();
         //Encontrando Monto, cantidad de meses y de pagos
         $datetime1 = new \DateTime($request['initd']);
         $datetime2 = new \DateTime($request['endd']);
@@ -726,7 +725,6 @@ class StudentController extends Controller
     }
 
     public function toIndexStats(){
-
       return view('stats.index');
     }
 

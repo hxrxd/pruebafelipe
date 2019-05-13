@@ -15,10 +15,6 @@ use App\Headquarters;
 use App\Log;
 use App\Supervisor;
 
-use Auth;
-use DB;
-use Session;
-use Redirect;
 
 class HeadquartersController extends Controller
 {
@@ -138,7 +134,7 @@ class HeadquartersController extends Controller
     public function update(Request $request, $id)
     {
         //
-
+        dd($request->all());
         $headquarter = Headquarters::find($id);
         $all = $request->all();
         $all['status'] = ($request->get('status') === 'on');

@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Input;
 
 use App\Objective;
 use App\ObjectiveForPlan;
-use App\ObjectiveResult;
 use App\Plan;
 use App\Student;
 use App\Headquarters;
@@ -99,7 +98,7 @@ class ObjectiveController extends Controller
         foreach ($objectives as $obj) {
           array_push($ids_obj,$obj->id);
         }
-        $nmonth = (int)date("n");
+
         $shared_objectives = DB::table('objectives')
                   ->join('plan_objectives','objectives.id','=','plan_objectives.objective')
                   ->join('plan','plan_objectives.plan','=','plan.id')
@@ -107,7 +106,6 @@ class ObjectiveController extends Controller
                   ->where('plan.team',$team->id_team)
                   ->where('plan.cohort',$cohort->name)
                   ->where('objectives.isGroup',1)
-                  //->where('plan.nmonth',$nmonth)
                   ->whereNotIn('objectives.id',$ids_obj)
                   ->select('objectives.*','plan.month as month')
                   ->groupBy('id')
@@ -366,68 +364,6 @@ class ObjectiveController extends Controller
         $o->save();
 
         return Response::json( $o );
-    }
-
-    /**
-     * Add a new objective's result.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function addResult(Request $request)
-    {
-        $rules = array(
-            'result' => 'required',
-            'objective' => 'required',
-            'cuantitative' => 'required'
-        );
-
-        $validator = Validator::make(Input::all(), $rules);
-
-        if ($validator->fails()) {
-            return Redirect::back()
-                ->withInput()
-                ->withErrors($validator);
-        } else {
-            $result = new ObjectiveResult;
-            $result->result = $request->result;
-            $result->objective = $request->objective;
-            $result->amount = $request->amount;
-            $result->description = $request->description;
-            $result->cuantitative = $request->cuantitative;
-            $result->save();
-
-            return Response::json($result);
-        }
-    }
-
-    /**
-     * Delete an objective result.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function removeResult(Request $req){
-        ObjectiveResult::find($req->id)->delete();
-        return response()->json();
-    }
-
-    /**
-     * Returns a list of objectives for a plan.
-     *
-     * @param  int $plan_id
-     * @return \Illuminate\Http\Response
-     */
-    public function listResults($objective_id)
-    {
-        //$objectives = Objective::where('plan',$plan_id)->get();
-        $results = DB::table('objectives_results')
-                  ->join('results','objectives_results.result','=','results.id')
-                  ->where('objectives_results.objective',$objective_id)
-                  ->select('objectives_results.*','results.description as type')
-                  ->get();
-
-        return Response::json($results);
     }
 
     /**

@@ -47,7 +47,7 @@ class PayController extends Controller
                         ->join('contracts','contracts.id_contracts','=','receipts.contract')
                         ->join('students','receipts.student','=','students.id_student')
                         ->select('students.name','students.fsurname','students.ssurname','students.carne','contracts.id_contracts','receipts.year','contracts.id_contracts','contracts.no','receipts.contract','receipts.id_receipts','receipts.payments','receipts.no','receipts.grant')
-                        ->where('receipts.created_at', '>=', '2019-01-01 00:00:00')
+                        ->where('receipts.created_at', '>=', '2018-01-01 00:00:00')
                         ->get();
 
                         

@@ -195,7 +195,6 @@ class MapController extends Controller
               ->lists('departament.departament',
                       'municipality.municipality');
 
-
         return json_encode($location);
     }
 

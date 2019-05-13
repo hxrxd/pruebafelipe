@@ -11,6 +11,9 @@
 |
 */
 use App\Municipality;
+use App\MetaDisciplines;
+use App\RequerimentsAssignment;
+use App\Cohorte;
 
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -18,7 +21,6 @@ Route::get('/', 'HomeController@index');
 Route::get('home', 'HomeController@index');
 
 // Authentication routes...
-
 Route::get('login', 'Auth\AuthController@getLogin');
 Route::post('login','Auth\AuthController@postLogin');
 
@@ -48,6 +50,25 @@ Route::get('/information/create/ajax-state',function()
     $subcategories = Municipality::where('id_departament','=', $id_departament)->get();
     return $subcategories;
 
+});
+
+Route::get('/information/request/ajax-state',function(){
+	$temp = Input::get('value');
+	$long= explode('-', $temp);
+	$ncohorte = Cohorte::where('status',1)->get()->first();
+	$meta = MetaDisciplines::select('id','metacarrer')
+							->where('carrer',$long['0'])
+							->where('academic',$long['1'])
+							->get()->first();
+							
+	$req = RequerimentsAssignment::join('headquarters','requeriments_assignment.headquarter', '=', 'headquarters.id_headquarters')
+								->select('requeriments_assignment.id as it','headquarters.id_headquarters as id','headquarters.name as sd')
+								->where('requeriments_assignment.meta_discipline',$meta->metacarrer)
+								->where('requeriments_assignment.academic_unit','like','%'.$long['1'].'%')
+								->where('requeriments_assignment.value',1)
+								->where('requeriments_assignment.cohorte',$ncohorte->name)
+								->get();
+	return $req;
 });
 
 Route::resource('municipality', 'MunicipalityController');
@@ -116,7 +137,6 @@ Route::get('settlement/{id}/redownload', 'SettlementController@recreateSettlemen
 //eliminar estudiante
 Route::get('sdelete/{id}/student', 'SettlementController@deleteStudent')->name('sdelete.student');
 
-
 //contratos
 Route::get('gcontrato1/{id}/download', 'GestorController@genContract130')->name('gcontrato1.download');
 
@@ -168,12 +188,13 @@ Route::get('logexcelsupervisors','ExcelController@getSucesosSupervisors');
 Route::get('logexpediente','ExcelController@getExpediente');
 Route::get('getchecks','ExcelController@getCheques');
 Route::get('getpay','ExcelController@getPagos');
-Route::get('getpayinfo','ExcelController@getPagosinfo');
 Route::get('getallinfo','ExcelController@getAllInfo');
 Route::get('getcontract','ExcelController@getContracts');
 Route::get('getgestion','ExcelController@getGestion');
 Route::get('getInvRegs','ExcelController@getInventoryRegs');
 Route::get('getAppraisals','ExcelController@getAppraisals');
+Route::get('getAssignment','ExcelController@getAssignment');
+Route::get('getAssignmentForCoor', 'ExcelController@getAssignmentForCoor');
 
 
 
@@ -341,6 +362,42 @@ Route::get('rep/arts', 'InventoryArticleController@getReport');
 Route::get('rep/purs', 'InventoryController@getPurchasesReport');
 Route::get('repgeneral', 'InventoryController@getReport');
 
+//New routes for stats 
+Route::get('stats/', 'StatsController@index');
+Route::get('stats/students', 'StatsController@initStudent');
+Route::get('stats/students/getresumeStudents/{typeReport}', 'StatsController@getStatsStudentsResumen');
+Route::get('stats/students/getStatsStudentsFilters/{typefilter}/{typeReport}/{gcohorts}/{supervisors}/{departament}/{yearsData}/{typeYears}/{dataYear}','StatsController@getStatsStudentsFilters');
+Route::get('stats/financing', 'StatsController@initFinancing');
+Route::get('stats/financing/getStatsGeneralFinancing/{typeReport}', 'StatsController@getStatsGeneralFinancing');
+Route::get('stats/financing/getStatsFinancingFilters/{typefilter}/{typeReport}/{gcohorts}/{supervisors}/{departament}/{yearsData}/{typeYears}/{dataYear}','StatsController@getStatsFinancingFilters');
+Route::get('stats/teams', 'StatsController@initTeams');
+Route::get('stats/teams/getStatsGeneralTeams/{typeReport}', 'StatsController@getStatsGeneralTeams');
+Route::get('stats/teams/getStatsGraph', 'StatsController@getAssignmentTeam');
+Route::get('stats/teams/getStatsTeamsFilters/{typefilter}/{typeReport}/{gcohorts}/{supervisors}/{departament}/{yearsData}/{typeYears}/{dataYear}','StatsController@getStatsTeamsFilters');
+Route::get('stats/teams/getStatsGraphByCohort/{gcohorts}/{supervisors}/{departament}','StatsController@getAssignmentTeamFilters');
+Route::get('stats/teams/getStatsGraphByYear/{yearsData}/{typeYears}/{dataYear}/{supervisors}/{departament}','StatsController@getAssignmentTeamYears');
+Route::get('stats/teams/getStatsGraphBySC/{supervisors}/{departament}','StatsController@getAssignmentTeamSC');
+Route::get('stats/goodsservices', "StatsController@initGoodndServices");
+Route::get('stats/goodsservices/getStatsBS/{typeReport}', 'StatsController@getStatsBS');
+Route::get('stats/googsservices/getStatsBSFilters/{typefilter}/{typeReport}/{gcohorts}/{supervisors}/{departament}/{yearsData}/{typeYears}/{dataYear}/{demadm}','StatsController@getStatsBSFilters');
+
+//Routes of Reports
+Route::post('get/report', 'ReportsController@getReportBS');
+Route::get('stats/goodsservices/getPDFBS/{pdf}','ReportsController@getPDFBS');
+
+Route::resource('requestdisciplines', 'RequestDisciplineController');
+Route::get('request/disciplines/{idRequest}/{value}', 'RequestDisciplineController@activate');
+Route::get('request/disciplines/actrequeriment/{idRequest}/{value}', 'RequestDisciplineController@actrequeriment');
+Route::get('request/getmunicipality/{value}', 'RequestDisciplineController@getmunicipality');
+Route::get('request/getteam/{value}', 'RequestDisciplineController@getteam');
+Route::get('request/getsede/{value}', 'RequestDisciplineController@getsede');
+Route::get('request/getUA/{value}', 'RequestDisciplineController@getUA');
+Route::get('request/getRequest','RequestDisciplineController@getRequest');
+Route::get('request/getmunicipalityD/{value}', 'RequestDisciplineController@getmunicipalityD');
+Route::get('request/getTablaData/{dp}/{mn}', 'RequestDisciplineController@getTablaData');
+
+Route::resource('requestsupervisor', 'RequestSupervisorController');
+/*Old routes for stats
 Route::get('stats/', 'StudentController@toIndexStats');
 Route::get('stats/students', 'StudentController@getStats');
 Route::get('stats/financing', 'StudentController@getFinancingStats');
@@ -362,6 +419,7 @@ Route::get('/stats/chart/dx/economy/{cat}/{order}', 'DxController@chartEconomy')
 Route::get('/stats/chart/dx/health/{cat}/{order}', 'DxController@chartHealth');
 Route::get('/stats/chart/dx/municipalmanagement/{order}', 'DxController@chartMM');
 Route::get('reprojects', 'ProjectController@getGeneralReport');
+Route::get('stats/goodsservices', "IndicatorsController@index");*/
 
 
 //doit
@@ -399,10 +457,6 @@ Route::post('notifications/{email}/{id}', 'NotificationController@markAsSeen');
 Route::post('notifications/{email}/delete/{id}', 'NotificationController@delete');
 Route::post('log/obj', 'LogTeamsController@addLog');
 Route::get('record/{id}', 'LogTeamsController@getRecord');
-Route::post('add/result', 'ObjectiveController@addResult');
-Route::post('remove/result', 'ObjectiveController@removeResult');
-Route::get('list/results/{objective}', 'ObjectiveController@listResults');
-Route::post('update/num_correction', 'PlanController@updateNumCorrection');
 
 Route::get('monthly/report/{id}', 'PlanController@reportToReview');
 Route::get('monthly/report/reviewed/{m}', 'PlanController@reportReviewed');

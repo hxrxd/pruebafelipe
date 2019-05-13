@@ -82,7 +82,7 @@ SOFTWARE.
         <div class="animated fadeInUp">
           <form class="form-horizontal">
           <div class="form-group"><label class="col-sm-2 control-label box-label"></label>
-              <label class="col-sm-10 title-form"><a id="add-o" class="text-menu-report"><i class="fa fa-plus"></i> Nuevo objetivo</a><a hidden id="add-followed-up" class="text-menu-report" style="margin-left:20px"><i class="fa fa-refresh"></i> Seguimiento de objetivo</a><a id="add-shared-o" class="text-menu-report" style="margin-left:20px"><i class="fa fa-share-alt"></i> Objetivos en equipo</a></label>
+              <label class="col-sm-10 title-form"><a id="add-o" class="text-menu-report"><i class="fa fa-plus"></i> Nuevo objetivo</a><a id="add-followed-up" class="text-menu-report" style="margin-left:20px"><i class="fa fa-refresh"></i> Seguimiento de objetivo</a><a id="add-shared-o" class="text-menu-report" style="margin-left:20px"><i class="fa fa-share-alt"></i> Objetivos en equipo</a></label>
           </div>
 
           <!--New Objective View-->
@@ -291,7 +291,7 @@ SOFTWARE.
 
           <div class="form-group"><label class="col-sm-2 control-label box-label-secoundary"></label>
             <div class="col-sm-10" style="display:inline-block">
-              <p style="color:#aaa"><strong style="color:#2ebeef">Ayuda:</strong> Si tu resultado es <strong>cuantitativo</strong>, ingresa una cantidad (si no lo es, deja el campo Cant. en blanco), selecciona el resultado/indicador propuesto, ingresa una descripción complementaria y luego haz clic en <strong>Agregar</strong>. Si tu resultado no encaja en ninguna clasificación, selecciona <strong>"Otro..."</strong> al final de la lista y especifica en la descripción tu resultado. <strong style="color:#2ebeef">Ejemplo:</strong> Cantidad: <strong>2</strong>, Clasificación del resultado: <strong>Talleres de capacitación</strong>, Descripción: <strong>en la Municipalidad de San Juan Cotzal.</strong></p>
+              <p style="color:#aaa"><strong style="color:#2ebeef">Ayuda:</strong> ingresa una cantidad, selecciona el resultado/indicador propuesto, ingresa una descripción complementaria y luego haz clic en <strong>Agregar</strong>. Si tu resultado no encaja en ninguna clasificación, selecciona <strong>"Otro..."</strong> al final de la lista y especifica en la descripción tu resultado. <strong style="color:#2ebeef">Ejemplo:</strong> Cantidad: <strong>2</strong>, Tipo de resultado: <strong>Talleres de capacitación</strong>, Descripción: <strong>en la Municipalidad de San Juan Cotzal.</strong></p>
             </div>
           </div>
 
@@ -414,10 +414,10 @@ SOFTWARE.
   var list_from_shared = [];
   var followed_objectives = [];
   var list_from_followed = [];
+  var results_ids = "";
   var suggestions = {!! json_encode($objectives_suggests) !!};
   var suggestion_index = 0;
   var objective_autor = $('#username').val();
-  var results = {!! json_encode($results) !!};
 
   $("body").toggleClass("mini-navbar");
   SmoothlyMenu();
@@ -655,7 +655,7 @@ SOFTWARE.
     $('html,body').animate({scrollTop: $("#results-dialog").offset().top-50},'slow');
   });
 
-  $('#results-select').editableSelect('holder','Clasificación del resultado').on('select.editable-select', function (e, el) {
+  $('#results-select').editableSelect('holder','Tipo de resultado').on('select.editable-select', function (e, el) {
 		$('#result-id').val(el.data('id'));
     //pass the focus to the next input
     setTimeout(function(){
@@ -681,7 +681,9 @@ SOFTWARE.
               'id': current_objective_to_edit,
               'objective': $('#objective-edit').val(),
               'activities': activities_formatted,
-              'results': $('#results-edit').val(),
+              //'results': $('#results-edit').val(),
+              'results': results_text.value.substr(0,results_text.value.length-2), //for remove the \n\n to end of string
+              'results_ids': results_ids,
               'hits': $('#hits-edit').val(),
               'failures': $('#failures-edit').val(),
               'isGroup': $('#isGroup-edit').is(":checked")?1:0,
@@ -767,7 +769,7 @@ SOFTWARE.
       updateExperiences();
       setTimeout(function(){
         location.href="{{ url('monthly/report/preview/'.$plan->nmonth)}}";
-      }, 400);
+      }, 300);
     }else{
       if(objectives_count == 0){
         swal({
@@ -792,47 +794,31 @@ SOFTWARE.
   });
 
   $('#add-result').click(function(){
-    //defines if a result is cuantitative (1) or not (cualitative, 0)
-    var is_cuantitative = ($('#result-amount').val() === '')?0:1;
-    var result_text = ($('#result-id').val() === '1')?'' + (($('#result-amount').val()==='0')?'':$('#result-amount').val()) + ' ' + $('#result-description').val():'' + (($('#result-amount').val()==='0')?'':$('#result-amount').val()) + ' ' + $('#results-select').val() + ' ' + $('#result-description').val();
+    var result = $('#results-select').val();
+    var text_result = "";
 
-    if($('#results-select').val() === ''){
-      swal({
-          title: "Falta información",
-          text: "Ingresa por lo menos una clasificación de resultado y una descripción.",
-          confirmButtonColor: "#2ebeef"
-      });
+    //if is 'other..' then no set result type
+    if($('#result-id').val() === '1'){
+      text_result = $('#result-amount').val() + ' ' + $('#result-description').val();
     }else{
-      $.ajax({
-          type: 'post',
-          url: '{{asset("add/result")}}',
-          data: {
-              '_token': "{{ csrf_token() }}",
-              'objective': current_objective_to_edit,
-              'result': $('#result-id').val(),
-              'amount': $('#result-amount').val(),
-              'description': $('#result-description').val(),
-              'cuantitative': is_cuantitative
-          },
-          success: function(data) {
-              if (data.errors) {
-                  console.log('ERROR_REG_RESULT');
-              } else {
-                  console.log('SUCCESS_REG_RESULT');
-
-                  updateTableResults(data,result_text);
-                  updateResultsField();
-              }
-          },
-      });
-
-      $('#results-select').editableSelect('clean');
-      $('#results-select').editableSelect('filter');
-      $('#result-description').val('');
-      document.getElementById('result-amount').value = '';
-      document.getElementById('result-amount').focus();
+      text_result = $('#result-amount').val() + ' ' + $('#results-select').val() + ' ' + $('#result-description').val();
     }
 
+    //for new results
+    if(results_text.value != '' && results_text.value.substr(results_text.value.length-2) != '\n\n'){
+      $('#results-edit').val($('#results-edit').val()+'\n\n');
+    }
+
+    $('#results-edit').val($('#results-edit').val()+text_result+'\n\n');
+    results_ids += $('#result-id').val() + ',';
+
+    updateTableResults($('#result-id').val(),text_result);
+
+    $('#results-select').editableSelect('clean');
+    $('#results-select').editableSelect('filter');
+    $('#result-description').val('');
+    document.getElementById('result-amount').value = '';
+    document.getElementById('result-amount').focus();
   });
 
   //operations for report/plan
@@ -968,7 +954,7 @@ SOFTWARE.
         $('#hits-edit').val(data.hits);
         $('#failures-edit').val(data.failures);
 
-        getResults();
+        getResults(data.results_ids,data.results);
 
         if(data.isGroup == 0){
           $('#isGroup-edit').prop("checked",false);
@@ -979,62 +965,40 @@ SOFTWARE.
     });
   }
 
-  function getResults(){
+  function getResults(idrs,results){
     $('#table-results-content').empty();
 
-    $.get('{{asset("list/results/obj")}}'.replace('obj',current_objective_to_edit), function (data) {
-      if(data.length === 0){
-        $('#table-results-content').append('<tr id="empty-row"><td colspan="4" style="vertical-align:middle; text-align:center; height:60px; background-color:#f9f9f9; font-size:16px;font-weight:bold; border-radius:10px">Los resultados o indicadores que agregues se mostrarán en este espacio</td></tr>');
-      }else{
-        data.forEach(function(data){
-          var res = (data.result === 1)?''+((data.amount===0)?'':data.amount)+' '+data.description:''+((data.amount===0)?'':data.amount)+' '+data.type+' '+data.description;
-          updateTableResults(data,res);
-        });
-      }
-    });
+    if(results === null || results === ''){
+      $('#table-results-content').append('<tr id="empty-row"><td colspan="4" style="vertical-align:middle; text-align:center; height:60px; background-color:#f9f9f9; font-size:16px;font-weight:bold; border-radius:10px">Los resultados o indicadores que agregues se mostrarán en este espacio</td></tr>');
+    }else{
+      var ids = idrs.split(',');
+      var results = results.split('\n\n');
 
-  }
-
-  function updateTableResults(data,result){
-    $('#empty-row').hide();
-    $('#table-results-content').append('<tr class="row-dotted-line"><td>' + result + '</td><td><button type="button" class="cool-button-option-delete" onclick="removeResult(this,'+data.id+')" style="float:right"><i class="fa fa-close"></i></button></td></tr>');
-  }
-
-  function removeResult(btn,id){
-
-      $.ajax({
-          type: 'post',
-          url: '{{asset("remove/result")}}',
-          data: {
-              '_token': "{{ csrf_token() }}",
-              'id': id
-          },
-          success: function(data) {
-              console.log("RESULT_DELETED");
-
-              var row = btn.parentNode.parentNode;
-              row.parentNode.removeChild(row);
-
-              //update the results objective field
-              updateResultsField();
-          }
+      results.forEach(function(result,i){
+        updateTableResults(ids[i],result);
       });
-
+    }
   }
 
-  function updateResultsField(){
-    $.get('{{asset("list/results/obj")}}'.replace('obj',current_objective_to_edit), function (data) {
-      $('#results-edit').val('');
+  function updateTableResults(id,result){
+    $('#empty-row').hide();
+    $('#table-results-content').append('<tr class="row-dotted-line"><td>' + result + '</td><td><button type="button" class="cool-button-option-delete" onclick="removeResult(this,'+id+',\'' + result + '\')" style="float:right"><i class="fa fa-close"></i></button></td></tr>');
+  }
 
-      if(data.length === 0){
-        // to do
-      }else{
-        data.forEach(function(data){
-          var res = (data.result === 1)?''+((data.amount===0)?'':data.amount)+' '+data.description:''+((data.amount===0)?'':data.amount)+' '+data.type+' '+data.description;
-          $('#results-edit').val($('#results-edit').val()+res+'\n\n');
-        });
+  function removeResult(btn,id,descrip){
+      console.log('ID_TO_DELETE:'+id);
+      var row = btn.parentNode.parentNode;
+      row.parentNode.removeChild(row);
+
+      // to match w/the lines breaks
+      if(results_text.value != '' && results_text.value.substr(results_text.value.length-2) != '\n\n'){
+        results_text.value += '\n\n';
       }
-    });
+
+      //remove from results text
+      results_text.value = results_text.value.replace(descrip+'\n\n','');
+      //remove from results ids
+      results_ids = results_ids.replace(''+id+',','');
   }
 
   function updateExperiences(){
@@ -1130,7 +1094,7 @@ SOFTWARE.
             }
         },
     });
-  }  
+  }
 
   function addObjectiveToList(check,objective){
 

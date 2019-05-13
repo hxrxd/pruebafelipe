@@ -20,6 +20,9 @@ use App\InvArticle;
 use App\InvProvider;
 use App\InvPurchase;
 use App\Appraisal;
+use App\Cohorte;
+use App\RequerimentsAssignment;
+use App\MetaDisciplines;
 use DB;
 use Auth;
 
@@ -141,9 +144,205 @@ class ExcelController extends Controller
 
     }
 
+    public function getAssignment()
+    {
+        # code...
+        Excel::create('SolucitudDeDisciplinas', function($excel) {
+            $usuario = Auth::user()->id;
+            $supervisor = Supervisor::where('iduser','=',$usuario)->get()->first();
+            if($supervisor!=null){
+                $name = $supervisor->name;
+            }else{
+                $name = Auth::user()->fname.' '.Auth::user()->lname;
+            }
+        $excel->sheet($name, function($sheet) {
+            $ncohorte = Cohorte::where('status',1)->get()->first();
 
+         if (Auth::user()->rol == "Admin") {
+            $assignment = RequerimentsAssignment::join('headquarters', 'requeriments_assignment.headquarter', '=', 'headquarters.id_headquarters')
+                ->join('teams', 'headquarters.team', '=', 'teams.id_team')
+                ->join('supervisors','teams.supervisor', '=', 'supervisors.id_supervisors')
+                ->join('municipality', 'teams.municipality', '=', 'municipality.id_municipality')
+                ->join('departament', 'municipality.id_departament', '=', 'departament.id_departament')
+                ->select(['supervisors.name as Supervisor',
+                        'departament.departament as Departamento', 
+                        'municipality.municipality as Municipio', 
+                        'teams.name as Equipo', 
+                        'headquarters.name as Sede', 
+                        'requeriments_assignment.meta_discipline as Disciplina', 
+                        'requeriments_assignment.academic_unit as UnidadAcadémica'])
+                ->where('requeriments_assignment.cohorte','like', $ncohorte->next)
+                ->where('requeriments_assignment.value',1)
+                ->orderBy('equipo', 'ASC')
+                ->get();
 
-      public function getAllInfo()
+         }else{
+            $nameS = trim(Auth::user()->fname).trim(Auth::user()->lname);
+            $meta = MetaDisciplines::select('academic')->distinct()
+                                    ->where('incharge', 'like','%'.trim(Auth::user()->fname).trim(Auth::user()->lname).'%')->get();
+            //dd(count($meta));
+               
+            if (count($meta)==1) {
+                # code...
+                $assignment = RequerimentsAssignment::join('headquarters', 'requeriments_assignment.headquarter', '=', 'headquarters.id_headquarters')
+                                ->join('teams', 'headquarters.team', '=', 'teams.id_team')
+                                ->join('municipality', 'teams.municipality', '=', 'municipality.id_municipality')
+                                ->join('departament', 'municipality.id_departament', '=', 'departament.id_departament')
+                                ->select(['departament.departament as Departamento', 
+                                        'municipality.municipality as Municipio', 
+                                        'Teams.name as Equipo', 
+                                        'headquarters.name as Sede', 
+                                        'requeriments_assignment.meta_discipline as Disciplina', 
+                                        'requeriments_assignment.academic_unit as UnidadAcademica'
+                                        ])
+                                ->where('requeriments_assignment.value', 1)
+                                ->where('requeriments_assignment.cohorte','like', $ncohorte->next)
+                                ->Where('requeriments_assignment.academic_unit','like', '%'.$meta[0]->academic.'%')
+                                ->orderBy('equipo', 'ASC')
+                                ->get();  
+            } else if(count($meta)==2){
+                # code...
+                $assignment = RequerimentsAssignment::join('headquarters', 'requeriments_assignment.headquarter', '=', 'headquarters.id_headquarters')
+                                ->join('teams', 'headquarters.team', '=', 'teams.id_team')
+                                ->join('municipality', 'teams.municipality', '=', 'municipality.id_municipality')
+                                ->join('departament', 'municipality.id_departament', '=', 'departament.id_departament')
+                                ->select(['departament.departament as Departamento', 
+                                        'municipality.municipality as Municipio', 
+                                        'Teams.name as Equipo', 
+                                        'headquarters.name as Sede', 
+                                        'requeriments_assignment.meta_discipline as Disciplina', 
+                                        'requeriments_assignment.academic_unit as UnidadAcademica'
+                                        ])
+                                ->where('requeriments_assignment.value', 1)
+                                ->where('requeriments_assignment.cohorte','like', $ncohorte->next)
+                                ->where(function($q) use ($meta) {
+                                    $q->Where('requeriments_assignment.academic_unit','like', '%'.$meta[0]->academic.'%')
+                                        ->orWhere('requeriments_assignment.academic_unit','like', '%'.$meta[1]->academic.'%');
+                                })
+                                ->orderBy('equipo', 'ASC')
+                                ->get();  
+            }else if(count($meta)==3){
+                # code...
+                $assignment = RequerimentsAssignment::join('headquarters', 'requeriments_assignment.headquarter', '=', 'headquarters.id_headquarters')
+                                ->join('teams', 'headquarters.team', '=', 'teams.id_team')
+                                ->join('municipality', 'teams.municipality', '=', 'municipality.id_municipality')
+                                ->join('departament', 'municipality.id_departament', '=', 'departament.id_departament')
+                                ->select(['departament.departament as Departamento', 
+                                        'municipality.municipality as Municipio', 
+                                        'Teams.name as Equipo', 
+                                        'headquarters.name as Sede', 
+                                        'requeriments_assignment.meta_discipline as Disciplina', 
+                                        'requeriments_assignment.academic_unit as UnidadAcademica'
+                                        ])
+                                ->where('requeriments_assignment.value', 1)
+                                ->where('requeriments_assignment.cohorte','like', $ncohorte->next)
+                                ->where(function($q) use ($meta) {
+                                    $q->Where('requeriments_assignment.academic_unit','like', '%'.$meta[0]->academic.'%')
+                                        ->orWhere('requeriments_assignment.academic_unit','like', '%'.$meta[1]->academic.'%')
+                                        ->orWhere('requeriments_assignment.academic_unit','like', '%'.$meta[2]->academic.'%');
+                                })
+                                ->orderBy('equipo', 'ASC')
+                                ->get(); 
+            }
+            else if(count($meta)==4){
+                # code...
+                $assignment = RequerimentsAssignment::join('headquarters', 'requeriments_assignment.headquarter', '=', 'headquarters.id_headquarters')
+                                ->join('teams', 'headquarters.team', '=', 'teams.id_team')
+                                ->join('municipality', 'teams.municipality', '=', 'municipality.id_municipality')
+                                ->join('departament', 'municipality.id_departament', '=', 'departament.id_departament')
+                                ->select(['departament.departament as Departamento', 
+                                        'municipality.municipality as Municipio', 
+                                        'Teams.name as Equipo', 
+                                        'headquarters.name as Sede', 
+                                        'requeriments_assignment.meta_discipline as Disciplina', 
+                                        'requeriments_assignment.academic_unit as UnidadAcademica'
+                                        ])
+                                ->where('requeriments_assignment.value', 1)
+                                ->where('requeriments_assignment.cohorte','like', $ncohorte->next)
+                                ->where(function($q) use ($meta){
+                                    $q->Where('requeriments_assignment.academic_unit','like', '%'.$meta[0]->academic.'%')
+                                        ->orWhere('requeriments_assignment.academic_unit','like', '%'.$meta[1]->academic.'%')
+                                        ->orWhere('requeriments_assignment.academic_unit','like', '%'.$meta[2]->academic.'%')
+                                        ->orWhere('requeriments_assignment.academic_unit','like', '%'.$meta[3]->academic.'%');
+                                })
+                                ->orderBy('equipo', 'ASC')
+                                ->get(); 
+            }
+            else if(count($meta)==5){
+                # code...
+                $assignment = RequerimentsAssignment::join('headquarters', 'requeriments_assignment.headquarter', '=', 'headquarters.id_headquarters')
+                                ->join('teams', 'headquarters.team', '=', 'teams.id_team')
+                                ->join('municipality', 'teams.municipality', '=', 'municipality.id_municipality')
+                                ->join('departament', 'municipality.id_departament', '=', 'departament.id_departament')
+                                ->select(['departament.departament as Departamento', 
+                                        'municipality.municipality as Municipio', 
+                                        'Teams.name as Equipo', 
+                                        'headquarters.name as Sede', 
+                                        'requeriments_assignment.meta_discipline as Disciplina', 
+                                        'requeriments_assignment.academic_unit as UnidadAcademica'
+                                        ])
+                                ->where('requeriments_assignment.value', 1)
+                                ->where('requeriments_assignment.cohorte','like', $ncohorte->next)
+                                ->where(function($q) use ($meta){
+                                    $q->Where('requeriments_assignment.academic_unit','like', '%'.$meta[0]->academic.'%')
+                                        ->orWhere('requeriments_assignment.academic_unit','like', '%'.$meta[1]->academic.'%')
+                                        ->orWhere('requeriments_assignment.academic_unit','like', '%'.$meta[2]->academic.'%')
+                                        ->orWhere('requeriments_assignment.academic_unit','like', '%'.$meta[3]->academic.'%')
+                                        ->orWhere('requeriments_assignment.academic_unit','like', '%'.$meta[4]->academic.'%');
+                                })
+                                ->orderBy('equipo', 'ASC')
+                                ->get(); 
+            }else{
+                $assignment['data'] = 'No existen Datos/Revisar base de datos';
+            }
+                                
+          // dd( $assignment);
+        }
+
+            $sheet->fromArray($assignment);
+
+        });
+
+        })->export('xlsx');
+
+    }
+    public function getAssignmentForCoor(){
+        Excel::create('SolucitudDeDisciplinas', function($excel) {
+            $usuario = Auth::user()->id;
+            $supervisor = Supervisor::where('iduser','=',$usuario)->get()->first();
+            if($supervisor!=null){
+                $name = $supervisor->name;
+            }else{
+                $name = Auth::user()->fname.' '.Auth::user()->lname;
+            }
+        $excel->sheet($name, function($sheet) {
+            $ncohorte = Cohorte::where('status',1)->get()->first();
+
+         if (Auth::user()->rol == "Coordinador") {
+            $assignment = RequerimentsAssignment::join('headquarters', 'requeriments_assignment.headquarter', '=', 'headquarters.id_headquarters')
+                ->join('teams', 'headquarters.team', '=', 'teams.id_team')
+                ->join('supervisors','teams.supervisor', '=', 'supervisors.id_supervisors')
+                ->join('municipality', 'teams.municipality', '=', 'municipality.id_municipality')
+                ->join('departament', 'municipality.id_departament', '=', 'departament.id_departament')
+                ->select(['supervisors.name as Supervisor',
+                        'departament.departament as Departamento', 
+                        'municipality.municipality as Municipio', 
+                        'teams.name as Equipo', 
+                        'headquarters.name as Sede', 
+                        'requeriments_assignment.meta_discipline as Disciplina', 
+                        'requeriments_assignment.academic_unit as UnidadAcadémica'])
+                ->where('requeriments_assignment.cohorte','like', $ncohorte->next)
+                ->where('requeriments_assignment.value',1)
+                ->orderBy('equipo', 'ASC')
+                ->get();
+
+            $sheet->fromArray($assignment);
+        }
+        });
+
+        })->export('xlsx');
+    }
+    public function getAllInfo()
     {
         # code...
         Excel::create('Estudiantes', function($excel) {
@@ -338,7 +537,7 @@ class ExcelController extends Controller
                             ->leftjoin('teams','headquarters.team','=','teams.id_team')
                             ->leftjoin('supervisors','supervisors.id_supervisors','=','teams.supervisor')
                             ->where('students.status','=','1')
-                             ->where('contracts.year', (int)date("Y"))
+                            ->where('contracts.year','=','2018')
                             ->select(
                                     [
                                         'students.carne as Carne',
@@ -462,48 +661,6 @@ class ExcelController extends Controller
                                     'supervisors.name as Supervisor',
                                     'cohortes.cohorte as Cohorte',
                                     DB::raw("DATE_FORMAT(receipts.created_at,'%d/%m/%Y') as Creado"),
-
-                                ]
-                                )
-                        ->get();
-
-
-        $sheet->fromArray($receipts);
-
-
-
-    });
-
-    })->export('xlsx');
-    }
-
-    public function getPagosinfo()
-    {
-        # fix
-
-        Excel::create('Pagos', function($excel) {
-
-        $excel->sheet('Hoja1', function($sheet) {
-
-
-         setlocale(LC_ALL,"es_ES.utf8");
-         $receipts = Receipt::query('receipts')
-                        ->leftjoin('students','receipts.student','=','students.id_student')
-                        ->leftjoin('cohortes','students.cohorte','=','cohortes.id')
-                        ->leftjoin('contracts','receipts.contract','=','contracts.id_contracts')
-                        ->leftjoin('headquarters','students.headquarter','=','headquarters.id_headquarters')
-                        ->leftjoin('teams','headquarters.team','=','teams.id_team')
-                        ->leftjoin('supervisors','supervisors.id_supervisors','=','teams.supervisor')
-                        ->leftjoin('financings','students.financing','=','financings.id_financings')
-                        ->where('receipts.year', (int)date("Y"))
-                        ->select(
-                                [
-                                    DB::raw("CONCAT(students.name,' ',students.fsurname,' ',students.ssurname) as Estudiante"),
-                                    DB::raw("CONCAT(receipts.no,'-',receipts.year) as Recibo"),
-                                    DB::raw("CONCAT(contracts.no,'-',contracts.year) as Contrato"),
-                                    'receipts.year as Año',
-                                    'receipts.grant as Monto',
-                                     DB::raw("CONCAT('Del ',DATE_FORMAT(receipts.initd,'%d'),'/', DATE_FORMAT(receipts.initd,'%m'), ' al ',DATE_FORMAT(receipts.endd,'%d'),'/', DATE_FORMAT(receipts.endd,'%m'), ' del ', DATE_FORMAT(receipts.initd,'%Y')) as Periodo")
 
                                 ]
                                 )

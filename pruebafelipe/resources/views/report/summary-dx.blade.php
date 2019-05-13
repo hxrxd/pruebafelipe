@@ -273,6 +273,7 @@
         </tbody>
       </table>
           <!--GESTION MUNICIPAL-->
+          <div id='Hola'></div>
       <table class="table table-bordered" style="width:100%; margin-bottom:40px;">
         <tbody>
           <tr>
@@ -299,6 +300,12 @@
 	    </div>
     </div>
   </div>
+  <script>
+  
+    jQuery(document).ready(function() {
+      jQuery('#Hola').html('<h1> ESCRITO DESDE JS </h1>');
+    });
+  </script>
 
 
 
